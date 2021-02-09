@@ -1,0 +1,5 @@
+RHEL_API_CODE:=$(shell $(TOP_ACCEL_MODULES_DIR)/build_scripts/abi-rhel-version.sh $(CURDIR))
+
+ifneq ($(RHEL_API_CODE), 0)
+  ccflags-y += -DRHEL_API_CODE=$(RHEL_API_CODE)
+endif
