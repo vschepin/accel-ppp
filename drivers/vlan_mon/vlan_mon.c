@@ -39,6 +39,24 @@
 #define RHEL_MAJOR 0
 #endif
 
+#ifndef RHEL_RELEASE_CODE
+#define RHEL_RELEASE_CODE 0
+#endif
+
+#ifndef RHEL_RELEASE_VERSION
+#define RHEL_RELEASE_VERSION(a,b) 1
+#endif
+
+#ifndef RHEL_API_CODE
+#define RHEL_API_CODE 0
+#endif
+
+#define RHEL_API_VERSION(a,b,c) (((a)*10000)+((b)*100)+(c))
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0) || (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,0) && RHEL_API_CODE >= RHEL_API_VERSION(193,0,0))
+#define policy_in_genl_family
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4,0,0) || RHEL_MAJOR == 7
 #define vlan_tx_tag_present(skb) skb_vlan_tag_present(skb)
 #endif
@@ -632,7 +650,7 @@ static const struct genl_ops vlan_mon_nl_ops[] = {
 	{
 		.cmd = VLAN_MON_CMD_NOOP,
 		.doit = vlan_mon_nl_cmd_noop,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0)
+#ifndef policy_in_genl_family
 		.policy = vlan_mon_nl_policy,
 #endif
 		/* can be retrieved by unprivileged users */
@@ -641,7 +659,7 @@ static const struct genl_ops vlan_mon_nl_ops[] = {
 		.cmd = VLAN_MON_CMD_ADD,
 		.doit = vlan_mon_nl_cmd_add_vlan_mon,
 		.flags = GENL_ADMIN_PERM,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0)
+#ifndef policy_in_genl_family
 		.policy = vlan_mon_nl_policy,
 #endif
 	},
@@ -649,7 +667,7 @@ static const struct genl_ops vlan_mon_nl_ops[] = {
 		.cmd = VLAN_MON_CMD_ADD_VID,
 		.doit = vlan_mon_nl_cmd_add_vlan_mon_vid,
 		.flags = GENL_ADMIN_PERM,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0)
+#ifndef policy_in_genl_family
 		.policy = vlan_mon_nl_policy,
 #endif
 	},
@@ -657,7 +675,7 @@ static const struct genl_ops vlan_mon_nl_ops[] = {
 		.cmd = VLAN_MON_CMD_DEL,
 		.doit = vlan_mon_nl_cmd_del_vlan_mon,
 		.flags = GENL_ADMIN_PERM,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0)
+#ifndef policy_in_genl_family
 		.policy = vlan_mon_nl_policy,
 #endif
 	},
@@ -665,7 +683,7 @@ static const struct genl_ops vlan_mon_nl_ops[] = {
 		.cmd = VLAN_MON_CMD_CHECK_BUSY,
 		.doit = vlan_mon_nl_cmd_check_busy,
 		.flags = GENL_ADMIN_PERM,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0)
+#ifndef policy_in_genl_family
 		.policy = vlan_mon_nl_policy,
 #endif
 	},
@@ -673,7 +691,7 @@ static const struct genl_ops vlan_mon_nl_ops[] = {
 		.cmd = VLAN_MON_CMD_DEL_VID,
 		.doit = vlan_mon_nl_cmd_del_vlan_mon_vid,
 		.flags = GENL_ADMIN_PERM,
-#if LINUX_VERSION_CODE < KERNEL_VERSION(5,2,0)
+#ifndef policy_in_genl_family
 		.policy = vlan_mon_nl_policy,
 #endif
 	},
@@ -704,7 +722,7 @@ static struct genl_family vlan_mon_nl_family = {
 	.mcgrps = vlan_mon_nl_mcgs,
 	.n_mcgrps = ARRAY_SIZE(vlan_mon_nl_mcgs),
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0)
+#ifdef policy_in_genl_family
 	.policy = vlan_mon_nl_policy,
 #endif
 };
